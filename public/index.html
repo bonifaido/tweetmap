@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+		<title>tweet-map</title>
+		<link rel="stylesheet" href="leaflet/leaflet.css" />
+	</head>
+	<body id="map" style="height: 600px;">
+		<script src="leaflet/leaflet.js"></script>
+		<script src="socket.io/socket.io.js"></script>
+		<script>
+
+			var socket = io.connect();
+
+			var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/[API-KEY]/999/256/{z}/{x}/{y}.png',
+					cloudmadeAttribution = 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
+					cloudmade = new L.TileLayer(cloudmadeUrl, {maxZoom: 18, attribution: cloudmadeAttribution});
+
+			var map = new L.Map('map');
+			map.setView(new L.LatLng(47.30, 19.03), 6).addLayer(cloudmade);
+
+			// request client location
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(function(position) {
+					socket.emit('coordinates', position.coords);
+
+					var marker = new L.Marker(new L.LatLng(position.coords.latitude, position.coords.longitude));
+					marker.bindPopup('<b>Your position!</b>');
+					map.addLayer(marker);
+				});
+			}
+
+			socket.on('tweet', function(tweet) {
+				var marker = new L.Marker(new L.LatLng(tweet.coords[1], tweet.coords[0]));
+				marker.bindPopup('<b>' + tweet.name + '</b><br/>' + tweet.text);
+				map.addLayer(marker);
+			});
+
+		</script>
+	</body>
+</html>
