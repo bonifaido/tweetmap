@@ -1,6 +1,6 @@
 {
   "author": "Nandor Kracser <bonifaido@gmail.com>",
-  "name": "tweet-map",
+  "name": "tweetmap",
   "description": "showing tweets on map, real-time",
   "version": "0.0.1",
   "homepage": "https://github.com/bonifaido/tweetmap",
